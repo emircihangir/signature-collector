@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PointsModel extends ChangeNotifier {
   List<Offset> points = [];
@@ -43,8 +47,11 @@ Future<void> main() async {
   ));
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => PointsModel(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => PointsModel()),
+        ChangeNotifierProvider(create: (context) => CurrentLabelModel())
+      ],
       builder: (context, child) => SignatureCollectorApp(),
     ),
   );
@@ -69,13 +76,17 @@ class SignatureCollectorApp extends StatelessWidget {
               );
             }),
             middle: Text("Signature Collector"),
-            trailing: CupertinoButton(
-              sizeStyle: CupertinoButtonSize.small,
-              child: Icon(
-                CupertinoIcons.check_mark,
-                size: 24,
-              ),
-              onPressed: () {},
+            trailing: Consumer<PointsModel>(
+              builder: (context, value, child) {
+                return CupertinoButton(
+                  sizeStyle: CupertinoButtonSize.small,
+                  onPressed: (value.points.isEmpty) ? null : () => saveTrace(context),
+                  child: Icon(
+                    CupertinoIcons.check_mark,
+                    size: 24,
+                  ),
+                );
+              },
             ),
           ),
           child: whiteBoard(context)),
@@ -139,37 +150,50 @@ class WhiteboardPainter extends CustomPainter {
   bool shouldRepaint(WhiteboardPainter oldDelegate) => true;
 }
 
-void _showPopupSurface(BuildContext context) {
-  showCupertinoModalPopup<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return CupertinoPopupSurface(
-        isSurfacePainted: false,
-        child: Container(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Expanded(child: Container()),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(8.0),
+Future<void> _showPopupSurface(BuildContext context) async {
+  Directory dir = await getApplicationDocumentsDirectory();
+  File yFile = File("${dir.path}/y.txt");
+  int trueCount = 0, falseCount = 0;
+  if (await yFile.exists()) {
+    trueCount = (await yFile.readAsLines()).where((element) => element == "1").length;
+    falseCount = (await yFile.readAsLines()).length - trueCount;
+  }
+
+  if (context.mounted) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoPopupSurface(
+          isSurfacePainted: false,
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                Expanded(child: Container()),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Column(
+                    children: [
+                      CupertinoListTile.notched(
+                        title: Text("Current Label"),
+                        trailing: CupertinoButton(
+                            onPressed: () {
+                              Provider.of<CurrentLabelModel>(context, listen: false).toggle();
+                            },
+                            child: Consumer<CurrentLabelModel>(builder: (context, value, child) => Text(value.currentLabel))),
+                      ),
+                      CupertinoListTile.notched(
+                        title: Text("Data Collected (T, F)"),
+                        trailing: Text("($trueCount, $falseCount)"),
+                      )
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    CupertinoListTile.notched(
-                      title: Text("Current Label"),
-                      trailing: CupertinoButton(onPressed: () {}, child: Text("True")),
-                    ),
-                    CupertinoListTile.notched(
-                      title: Text("Data Collected (T, F)"),
-                      trailing: Text("(23, 20)"),
-                    )
-                  ],
-                ),
-              ),
                 const SizedBox(height: 8.0),
                 SizedBox(
                   width: double.infinity,
@@ -182,21 +206,21 @@ void _showPopupSurface(BuildContext context) {
                     child: const Text('Clear the canvas', style: TextStyle(color: CupertinoColors.systemBlue)),
                   ),
                 ),
-              const SizedBox(height: 8.0),
-              SizedBox(
-                width: double.infinity,
-                child: CupertinoButton(
-                  color: CupertinoColors.white,
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close', style: TextStyle(color: CupertinoColors.systemBlue)),
+                const SizedBox(height: 8.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton(
+                    color: CupertinoColors.white,
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Close', style: TextStyle(color: CupertinoColors.systemBlue)),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
   }
 }
 
