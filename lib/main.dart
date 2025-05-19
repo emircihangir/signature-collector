@@ -11,7 +11,7 @@ class PointsModel extends ChangeNotifier {
   }
 }
 
-List<List> trace = [];
+List trace = [];
 DateTime? startedDrawing;
 
 Future<void> main() async {
@@ -80,7 +80,7 @@ Widget whiteBoard(BuildContext context) {
       if (startedDrawing == null) {
         startedDrawing = DateTime.now();
       } else {
-        trace.add([
+        trace.addAll([
           details.globalPosition.dx,
           details.globalPosition.dy,
           (DateTime.now().difference(startedDrawing!).inMicroseconds)
@@ -89,6 +89,7 @@ Widget whiteBoard(BuildContext context) {
     },
     onPanEnd: (_) {
       Provider.of<PointsModel>(context, listen: false).addPoint(Offset.zero);
+      // print(trace.join(","));
     },
     child: Consumer<PointsModel>(
       builder: (context, value, child) {
@@ -131,18 +132,28 @@ void _showPopupSurface(BuildContext context) {
       return CupertinoPopupSurface(
         isSurfacePainted: false,
         child: Container(
-          height: 240,
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Expanded(
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: const Text('This is a popup surface.'),
+              Expanded(child: Container()),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  children: [
+                    CupertinoListTile.notched(
+                      title: Text("Current Label"),
+                      trailing: CupertinoButton(onPressed: () {}, child: Text("True")),
+                    ),
+                    CupertinoListTile.notched(
+                      title: Text("Data Collected (T, F)"),
+                      trailing: Text("(23, 20)"),
+                    )
+                  ],
                 ),
               ),
               const SizedBox(height: 8.0),
