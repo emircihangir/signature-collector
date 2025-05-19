@@ -17,7 +17,7 @@ DateTime? startedDrawing;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitUp
   ]);
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -42,7 +42,27 @@ class SignatureCollectorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      home: CupertinoPageScaffold(child: whiteBoard(context)),
+      home: CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            leading: CupertinoButton(
+              sizeStyle: CupertinoButtonSize.small,
+              child: Icon(
+                CupertinoIcons.settings,
+                size: 24,
+              ),
+              onPressed: () {},
+            ),
+            middle: Text("Signature Collector"),
+            trailing: CupertinoButton(
+              sizeStyle: CupertinoButtonSize.small,
+              child: Icon(
+                CupertinoIcons.check_mark,
+                size: 24,
+              ),
+              onPressed: () {},
+            ),
+          ),
+          child: whiteBoard(context)),
     );
   }
 }
