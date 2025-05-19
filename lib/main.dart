@@ -9,6 +9,20 @@ class PointsModel extends ChangeNotifier {
     points.add(point);
     notifyListeners();
   }
+
+  void clear() {
+    points.clear();
+    notifyListeners();
+  }
+}
+
+class CurrentLabelModel extends ChangeNotifier {
+  String currentLabel = "True";
+
+  void toggle() {
+    (currentLabel == "True") ? currentLabel = "False" : currentLabel = "True";
+    notifyListeners();
+  }
 }
 
 List trace = [];
@@ -156,6 +170,18 @@ void _showPopupSurface(BuildContext context) {
                   ],
                 ),
               ),
+                const SizedBox(height: 8.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton(
+                    color: CupertinoColors.white,
+                    onPressed: () {
+                      clearCanvas(context);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Clear the canvas', style: TextStyle(color: CupertinoColors.systemBlue)),
+                  ),
+                ),
               const SizedBox(height: 8.0),
               SizedBox(
                 width: double.infinity,
