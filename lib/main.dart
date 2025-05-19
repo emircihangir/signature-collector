@@ -171,4 +171,28 @@ void _showPopupSurface(BuildContext context) {
       );
     },
   );
+  }
+}
+
+Future<void> saveTrace(BuildContext context) async {
+  Directory dir = await getApplicationDocumentsDirectory();
+
+  File xFile = File("${dir.path}/X.txt");
+  await xFile.writeAsString('${trace.join(",")}\n', mode: FileMode.append);
+
+  File yFile = File("${dir.path}/y.txt");
+  late String labelValue;
+  if (context.mounted && Provider.of<CurrentLabelModel>(context, listen: false).currentLabel == "True") {
+    labelValue = "1";
+  } else {
+    labelValue = "0";
+  }
+  await yFile.writeAsString("$labelValue\n", mode: FileMode.append);
+
+  if (context.mounted) clearCanvas(context);
+}
+
+void clearCanvas(BuildContext context) {
+  Provider.of<PointsModel>(context, listen: false).clear();
+  trace.clear();
 }
