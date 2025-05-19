@@ -44,14 +44,16 @@ class SignatureCollectorApp extends StatelessWidget {
     return CupertinoApp(
       home: CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
-            leading: CupertinoButton(
-              sizeStyle: CupertinoButtonSize.small,
-              child: Icon(
-                CupertinoIcons.settings,
-                size: 24,
-              ),
-              onPressed: () {},
-            ),
+            leading: Builder(builder: (context) {
+              return CupertinoButton(
+                sizeStyle: CupertinoButtonSize.small,
+                child: Icon(
+                  CupertinoIcons.settings,
+                  size: 24,
+                ),
+                onPressed: () => _showPopupSurface(context),
+              );
+            }),
             middle: Text("Signature Collector"),
             trailing: CupertinoButton(
               sizeStyle: CupertinoButtonSize.small,
@@ -120,4 +122,42 @@ class WhiteboardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(WhiteboardPainter oldDelegate) => true;
+}
+
+void _showPopupSurface(BuildContext context) {
+  showCupertinoModalPopup<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return CupertinoPopupSurface(
+        isSurfacePainted: false,
+        child: Container(
+          height: 240,
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: const Text('This is a popup surface.'),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              SizedBox(
+                width: double.infinity,
+                child: CupertinoButton(
+                  color: CupertinoColors.white,
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close', style: TextStyle(color: CupertinoColors.systemBlue)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
