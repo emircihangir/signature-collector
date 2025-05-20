@@ -211,6 +211,32 @@ Future<void> _showPopupSurface(BuildContext context) async {
                   width: double.infinity,
                   child: CupertinoButton(
                     color: CupertinoColors.white,
+                    onPressed: () async {
+                      const MethodChannel mc = MethodChannel("com.example.save_to_downloads");
+                      bool resultY = await mc.invokeMethod("saveToDownloads", {
+                        "content": await yFile.readAsString(),
+                        "fileName": "signaturecollectorY.txt",
+                        "mimeType": "text/plain"
+                      });
+
+                      File xFile = File("${dir.path}/X.txt");
+                      bool resultX = await mc.invokeMethod("saveToDownloads", {
+                        "content": await xFile.readAsString(),
+                        "fileName": "signaturecollectorX.txt",
+                        "mimeType": "text/plain"
+                      });
+
+                      debugger();
+                      // Navigator.pop(context);
+                    },
+                    child: const Text('Export data', style: TextStyle(color: CupertinoColors.systemBlue)),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton(
+                    color: CupertinoColors.white,
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Close', style: TextStyle(color: CupertinoColors.systemBlue)),
                   ),
