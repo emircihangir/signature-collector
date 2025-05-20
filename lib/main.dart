@@ -1,4 +1,4 @@
-import 'dart:developer';
+// import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -226,8 +226,8 @@ Future<void> _showPopupSurface(BuildContext context) async {
                         "mimeType": "text/plain"
                       });
 
-                      debugger();
-                      // Navigator.pop(context);
+                      // debugger();
+                      if (resultX && resultY && context.mounted) Navigator.pop(context);
                     },
                     child: const Text('Export data', style: TextStyle(color: CupertinoColors.systemBlue)),
                   ),
