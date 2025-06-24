@@ -34,9 +34,7 @@ DateTime? startedDrawing;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: CupertinoColors.transparent,
@@ -63,6 +61,9 @@ class SignatureCollectorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
+      theme: const CupertinoThemeData(
+        brightness: Brightness.light,
+      ),
       home: CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
             leading: Builder(builder: (context) {
@@ -185,7 +186,8 @@ Future<void> _showPopupSurface(BuildContext context) async {
                             onPressed: () {
                               Provider.of<CurrentLabelModel>(context, listen: false).toggle();
                             },
-                            child: Consumer<CurrentLabelModel>(builder: (context, value, child) => Text(value.currentLabel))),
+                            child: Consumer<CurrentLabelModel>(
+                                builder: (context, value, child) => Text(value.currentLabel))),
                       ),
                       CupertinoListTile.notched(
                         title: Text("Data Collected (T, F)"),
@@ -203,7 +205,8 @@ Future<void> _showPopupSurface(BuildContext context) async {
                       clearCanvas(context);
                       Navigator.pop(context);
                     },
-                    child: const Text('Clear the canvas', style: TextStyle(color: CupertinoColors.systemBlue)),
+                    child: const Text('Clear the canvas',
+                        style: TextStyle(color: CupertinoColors.systemBlue)),
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -229,7 +232,8 @@ Future<void> _showPopupSurface(BuildContext context) async {
                       // debugger();
                       if (resultX && resultY && context.mounted) Navigator.pop(context);
                     },
-                    child: const Text('Export data', style: TextStyle(color: CupertinoColors.systemBlue)),
+                    child: const Text('Export data',
+                        style: TextStyle(color: CupertinoColors.systemBlue)),
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -258,7 +262,8 @@ Future<void> saveTrace(BuildContext context) async {
 
   File yFile = File("${dir.path}/y.txt");
   late String labelValue;
-  if (context.mounted && Provider.of<CurrentLabelModel>(context, listen: false).currentLabel == "True") {
+  if (context.mounted &&
+      Provider.of<CurrentLabelModel>(context, listen: false).currentLabel == "True") {
     labelValue = "1";
   } else {
     labelValue = "0";
